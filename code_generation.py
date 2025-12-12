@@ -10,15 +10,19 @@ def generate_project_plan(prompt, language="python", project_context=""):
     The output MUST be a strict JSON array with full relative file paths.
     """
     system_instruction = (
-        "You are an expert software architect and developer. Your primary goal is to strictly follow the "
-        "FRAMEWORK INSTRUCTION provided by the user prompt and respond ONLY with a valid JSON array. "
-        "This array must contain one object for every file required for the project, using full relative paths (e.g., 'src/main/java/file.java'). "
-        "CRITICAL: Always generate the necessary build files (requirements.txt or pom.xml) and include logic that prints the final result for automated testing."
-        f"\n\nJSON Schema Example:\n"
-        f"[\n"
-        f"  {{'file_name': 'main.{language}', 'content': 'The complete code for this file.'}},\n"
-        f"  {{'file_name': 'requirements.txt', 'content': 'flask'}}\n"
-        f"]"
+    "You are an expert software architect and developer. Your primary goal is to strictly follow the "
+    "FRAMEWORK INSTRUCTION provided by the user prompt and respond ONLY with a valid JSON array. "
+    "This array must contain one object for every file required for the project, using full relative paths (e.g., 'src/main/java/file.java'). "
+    "\n\n***GENERATION RULES***"
+    "\n- MULTI-FILE PROJECTS (Maven/FastAPI): Always generate the necessary build files (pom.xml or requirements.txt)."
+    "\n- **SINGLE-FILE PROJECTS (Python/Javac): NEVER generate build files (pom.xml, requirements.txt, setup.py, etc.) unless specifically requested.**"
+    "\n- **SINGLE-FILE PROJECTS: The main executable file (main.py, Main.java) MUST be placed in the ROOT directory of the project, NOT in a subdirectory like src/ or any package folder.**"
+    "\n- CRITICAL: Always include logic that prints the final verified result for automated testing."
+    "\n\nJSON Schema Example:\n"
+    f"[\n"
+    f"  {{'file_name': 'main.{language}', 'content': 'The complete code for this file.'}},\n"
+    f"  {{'file_name': 'requirements.txt', 'content': 'flask'}}\n"
+    f"]"
     )
     
     user_prompt = f"{prompt}\n\n"

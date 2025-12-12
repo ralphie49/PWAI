@@ -72,6 +72,45 @@ def test_maven_project(temp_dir):
         
     return f"Maven Project built and unit tests passed successfully.\nOutput (Last 10 lines):\n{'\n'.join(result.stdout.strip().splitlines()[-10:])}"
 
+def test_javac_project(temp_dir):
+    """Compiles a single Java file using javac and executes it using java."""
+    
+    main_java_file_path = None
+    for root, _, files in os.walk(temp_dir):
+        for name in files:
+            if name.endswith('.java'):
+                main_java_file_path = os.path.join(root, name) 
+                break
+        if main_java_file_path:
+            break
+
+    if not main_java_file_path:
+        return "Execution Error: Could not find any Java file (.java) to compile in the project structure."
+
+    main_file_name = os.path.basename(main_java_file_path)
+    main_class = main_file_name.replace('.java', '')
+    
+    print(f"[Tool]: Compiling single Java file: {main_file_name}...")
+
+    compile_command = ["javac", main_java_file_path]
+    compile_result = run_subprocess(compile_command, temp_dir, timeout=10) 
+
+    if compile_result.returncode != 0:
+        return f"Compilation Error (Exit Code {compile_result.returncode}):\n{compile_result.stderr}"
+
+    print("[Tool]: Compilation successful. Running Java program...")
+
+    run_command = ["java", "-cp", temp_dir, main_class]
+    run_result = run_subprocess(run_command, temp_dir, timeout=10)
+        
+    if run_result.returncode != 0:
+        return f"Runtime Error (Exit Code {run_result.returncode}):\n{run_result.stderr}\nOutput:\n{run_result.stdout}"
+
+    if run_result.stdout.strip():
+        return f"Python Project executed successfully.\nOutput:\n{run_result.stdout.strip()}"
+    else:
+        return "Java Program executed, but produced no standard output. The agent must include a print() statement for verification."
+
 def test_python_project(temp_dir):
     """Installs dependencies and executes a Python project."""
     
@@ -106,9 +145,9 @@ def test_python_project(temp_dir):
         return f"Runtime Error (Exit Code {result.returncode}):\n{result.stderr}\nOutput:\n{result.stdout}"
     
     if result.stdout.strip():
-         return f"Python Project executed successfully.\nOutput:\n{result.stdout.strip()}"
+        return f"Python Project executed successfully.\nOutput:\n{result.stdout.strip()}"
     else:
-         return "Python Project executed, but produced no standard output. The agent must include a print() statement for verification."
+        return "Python Project executed, but produced no standard output. The agent must include a print() statement for verification."
 
 def test_project(temp_dir, language, build_tool):
     """The unified function called by the orchestrator to decide the testing method."""
@@ -118,7 +157,7 @@ def test_project(temp_dir, language, build_tool):
     elif language == "python":
         return test_python_project(temp_dir)
     elif language == "java" and build_tool == "javac":
-        return "Testing single-file Java via javac is not fully implemented in this hybrid agent yet. Try a Python single file or a Maven multi-file project."
+        return test_javac_project(temp_dir)
     else:
         return f"Test Error: Unsupported build tool/language combination: {language}/{build_tool}."
 
