@@ -9,8 +9,6 @@ def generate_project_plan(prompt, language="python", project_context=""):
     Generates a structured plan and code for a multi-file project.
     The output MUST be a strict JSON array with full relative file paths.
     """
-    
-    # 1. Define the system instruction for structured output
     system_instruction = (
         "You are an expert software architect and developer. Your primary goal is to strictly follow the "
         "FRAMEWORK INSTRUCTION provided by the user prompt and respond ONLY with a valid JSON array. "
@@ -23,7 +21,6 @@ def generate_project_plan(prompt, language="python", project_context=""):
         f"]"
     )
     
-    # 2. Construct the prompt with context
     user_prompt = f"{prompt}\n\n"
     if project_context:
         user_prompt += f"EXISTING PROJECT CONTEXT/ERROR FEEDBACK:\n{project_context}\n\n"
@@ -31,7 +28,6 @@ def generate_project_plan(prompt, language="python", project_context=""):
     else:
         user_prompt += "Generate the initial project structure and complete code."
 
-    # 3. Call the API
     try:
         response = client.models.generate_content(
             model="gemini-2.5-flash",
@@ -42,7 +38,6 @@ def generate_project_plan(prompt, language="python", project_context=""):
         print(f"API Call Failed: {e}")
         return None
     
-    # 4. Handle JSON extraction and parsing
     raw_text = response.text.strip()
     try:
         if raw_text.startswith('```json'):
