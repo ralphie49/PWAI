@@ -1,13 +1,9 @@
 import os
-<<<<<<< HEAD
 import json
-=======
->>>>>>> 24fe9b65d74d5ca10cbb9799e58dd22819d4b058
 from google import genai
 
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-<<<<<<< HEAD
 def generate_project_plan(prompt, language="python", project_context=""):
     """
     Generates a structured plan and code for a multi-file project.
@@ -66,35 +62,3 @@ def generate_project_plan(prompt, language="python", project_context=""):
     except Exception as e:
         print(f"Error processing project files: {e}")
         return None
-=======
-def generate_code(prompt, language="python"):
-    if language == "python":
-        model_name = "gemini-2.5-flash"
-        system_instruction = "You are a highly skilled Python code generator. Only respond with the requested, complete, and runnable Python code. Do not include any extra text, explanations, or markdown formatting (e.g., ```python)."
-    elif language == "java":
-        model_name = "gemini-2.5-flash" 
-        system_instruction = "You are a highly skilled Java code generator. Only respond with the requested, complete, and runnable Java code. Do not include any extra text, explanations, or markdown formatting (e.g., ```java)."
-    else:
-        raise ValueError("Unsupported language: Choose either 'python' or 'java'.")
-    
-    config = {
-        "system_instruction": system_instruction,
-        "max_output_tokens": 8000,
-        "temperature": 0.5,
-    }
-
-    response = client.models.generate_content(
-        model=model_name,
-        contents=[prompt],
-        config=config,
-    )
-    
-    code = response.text.strip()
-    return code
-
-if __name__ == "__main__":
-    user_prompt = input("Enter your code generation prompt: ")
-    language = input("Enter the programming language (python/java): ").lower()
-    generated_code = generate_code(user_prompt, language)
-    print("Generated Code:\n", generated_code)
->>>>>>> 24fe9b65d74d5ca10cbb9799e58dd22819d4b058

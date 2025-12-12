@@ -10,7 +10,4 @@ __pycache__/
 .idea/build/
 dist/
 *.egg
-<<<<<<< HEAD
 .venv/
-=======
->>>>>>> 24fe9b65d74d5ca10cbb9799e58dd22819d4b058
